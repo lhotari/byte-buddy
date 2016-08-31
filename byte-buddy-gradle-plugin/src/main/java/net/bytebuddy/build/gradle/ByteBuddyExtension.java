@@ -25,11 +25,17 @@ public class ByteBuddyExtension {
 		failOnLiveInitializer = true;
 	}
 
-	public Transformation transformation(Closure<?> closure) {
-		Transformation transformation = (Transformation) project
-				.configure(new Transformation(), closure);
-		transformations.add(transformation);
-		return transformation;
+	private class TransformationsConfigurer {
+		public Transformation transformation(Closure<?> closure) {
+			Transformation transformation = (Transformation) project
+					.configure(new Transformation(), closure);
+			transformations.add(transformation);
+			return transformation;
+		}
+	}
+
+	public void transformations(Closure<?> closure) {
+		project.configure(new TransformationsConfigurer(), closure);
 	}
 
 	public Initialization initialization(Closure<?> closure) {

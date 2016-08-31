@@ -9,12 +9,9 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.scaffold.inline.MethodNameTransformer;
 import net.bytebuddy.implementation.LoadedTypeInitializer;
 import net.bytebuddy.pool.TypePool;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.logging.Logger;
-import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +40,7 @@ public class Transformer {
             for (Transformation transformation : byteBuddyExtension.getTransformations()) {
                 try {
                     String plugin = transformation.getPlugin();
-                    plugins.add((Plugin) Class.forName(plugin, false, classLoaderResolver.resolve(transformation.getClasspathFiles()))
+                    plugins.add((Plugin) Class.forName(plugin, false, classLoaderResolver.resolve(transformation.getClasspath()))
                             .getDeclaredConstructor()
                             .newInstance());
                     logger.info("Created plugin: {}", plugin);

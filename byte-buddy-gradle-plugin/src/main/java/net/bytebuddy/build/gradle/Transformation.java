@@ -5,7 +5,7 @@ import java.io.File;
 public class Transformation {
 	private String plugin;
 
-	private Iterable<File> classpathFiles;
+	private Iterable<File> classpath;
 
 	public Transformation() {
 
@@ -19,11 +19,11 @@ public class Transformation {
 		this.plugin = plugin;
 	}
 
-	public Iterable<File> getClasspathFiles() {
-		return classpathFiles;
+	public Iterable<File> getClasspath() {
+		return classpath;
 	}
 
-	public void setClasspathFiles(Iterable<File> classpathFiles) {
-		this.classpathFiles = classpathFiles;
+	public void setClasspath(Iterable<File> classpath) {
+		this.classpath = classpath;
 	}
 }
