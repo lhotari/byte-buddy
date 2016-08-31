@@ -1,12 +1,19 @@
 package net.bytebuddy.build.gradle;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.gradle.api.Action;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
+import org.gradle.api.tasks.compile.AbstractCompile;
 
 public class ByteBuddyPlugin implements Plugin<Project> {
 
     /*
-     * TODO:
+	 * TODO:
      *
      * 1. Create complex configuration (allow nesting and lists).
      * 2. Find way to append task to class compilation / test-class compilation.
@@ -19,10 +26,30 @@ public class ByteBuddyPlugin implements Plugin<Project> {
      * 3. What GradleExceptions should be thrown? Any sub types?
      */
 
-    @Override
-    public void apply(Project project) {
-        project.getExtensions().create("byteBuddy", ByteBuddyExtension.class, project);
-        project.getTasks().create("transform", TransformTask.ForProductionTypes.class);
-        project.getTasks().create("test-transform", TransformTask.ForTestTypes.class);
-    }
+	@Override
+	public void apply(final Project project) {
+		final ByteBuddyExtension byteBuddyExtension = project.getExtensions()
+				.create("byteBuddy", ByteBuddyExtension.class, project);
+		project.getTasks().withType(AbstractCompile.class, new Action<AbstractCompile>() {
+			@Override
+			public void execute(AbstractCompile compileTask) {
+				final Iterable<File> compileClasspathFiles = compileTask.getClasspath();
+				final File classesDir = compileTask.getDestinationDir();
+				compileTask.doLast(new Action<Task>() {
+					@Override
+					public void execute(Task task) {
+						try {
+							new Transformer(project, byteBuddyExtension)
+									.processOutputDirectory(classesDir,
+											compileClasspathFiles);
+						}
+						catch (IOException e) {
+							throw new GradleException(
+									"Exception in byte-buddy processing", e);
+						}
+					}
+				});
+			}
+		});
+	}
 }

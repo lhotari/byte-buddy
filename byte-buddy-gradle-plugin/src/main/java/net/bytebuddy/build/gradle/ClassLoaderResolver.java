@@ -16,18 +16,22 @@ import org.gradle.api.logging.Logger;
 
 public class ClassLoaderResolver implements Closeable {
 	private final Logger logger;
-	private final Map<String, ClassLoader> classLoaders;
+	private final Map<List<File>, ClassLoader> classLoaders;
 
 	public ClassLoaderResolver(Project project) throws MalformedURLException {
 		this.logger = project.getLogger();
-		this.classLoaders = new HashMap<String, ClassLoader>();
+		this.classLoaders = new HashMap<List<File>, ClassLoader>();
 	}
 
-	public ClassLoader resolve(String transformerId, Iterable<File> classpathFiles) {
-		ClassLoader classLoader = classLoaders.get(transformerId);
+	public ClassLoader resolve(Iterable<File> classpathFiles) {
+		List<File> classpathFilesList = new ArrayList<File>();
+		for (File file : classpathFiles) {
+			classpathFilesList.add(file);
+		}
+		ClassLoader classLoader = classLoaders.get(classpathFilesList);
 		if (classLoader == null) {
-			classLoader = createClassLoader(classpathFiles);
-			classLoaders.put(transformerId, classLoader);
+			classLoader = createClassLoader(classpathFilesList);
+			classLoaders.put(classpathFilesList, classLoader);
 		}
 		return classLoader;
 	}
