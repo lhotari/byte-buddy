@@ -27,6 +27,6 @@ public class Initialization {
 	}
 
 	public EntryPoint toEntryPoint(ClassLoaderResolver classLoaderResolver) {
-		return null; // TODO
+		return EntryPoint.Default.valueOf(entryPoint);
 	}
 }
