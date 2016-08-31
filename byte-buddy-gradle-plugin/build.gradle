@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'idea'
 
 def pom = new XmlSlurper().parse(file('./pom.xml'))
 
