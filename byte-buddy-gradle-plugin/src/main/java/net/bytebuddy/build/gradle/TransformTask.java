@@ -54,7 +54,7 @@ public abstract class TransformTask extends DefaultTask {
             for (Transformation transformation : byteBuddyExtension.getTransformations()) {
                 try {
                     String plugin = transformation.getPlugin();
-                    plugins.add((Plugin) Class.forName(plugin, false, classLoaderResolver.resolve(transformation.asCoordinate(getProject())))
+                    plugins.add((Plugin) Class.forName(plugin, false, classLoaderResolver.resolve(plugin, transformation.getClasspathFiles()))
                             .getDeclaredConstructor()
                             .newInstance());
                     getLogger().info("Created plugin: {}", plugin);

@@ -1,20 +1,29 @@
 package net.bytebuddy.build.gradle;
 
-import org.gradle.api.Project;
+import java.io.File;
 
-public class Transformation extends AbstractUserConfiguration {
+public class Transformation {
+	private String plugin;
 
-    private String plugin;
+	private Iterable<File> classpathFiles;
 
-    public Transformation(Project project) {
-        super(project);
-    }
+	public Transformation() {
 
-    public String getPlugin() {
-        return plugin;
-    }
+	}
 
-    public void setPlugin(String plugin) {
-        this.plugin = plugin;
-    }
+	public String getPlugin() {
+		return plugin;
+	}
+
+	public void setPlugin(String plugin) {
+		this.plugin = plugin;
+	}
+
+	public Iterable<File> getClasspathFiles() {
+		return classpathFiles;
+	}
+
+	public void setClasspathFiles(Iterable<File> classpathFiles) {
+		this.classpathFiles = classpathFiles;
+	}
 }
