@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.junit.Assert.assertEquals;
 
@@ -72,27 +73,29 @@ public class ByteBuddyPluginFunctionalTest {
 
 	@Test
 	public void testByteBuddy() throws IOException {
-		Files.write(
-				"plugins {\n" + "    id 'java'\n" + "    id 'net.bytebuddy.byte-buddy'\n"
-						+ "}\n" + "configurations {\n" + "    simpleplugin\n" + "}\n"
-						+ "dependencies {\n" + "    simpleplugin files(\""
-						+ testPluginJarFile.getAbsolutePath()
-						.replace(File.separatorChar, '/') + "\")\n" + "}\n"
-						+ "byteBuddy {\n" + "    transformations {\n"
-						+ "        transformation {\n"
+		Files.write("plugins {\n" + "    id 'java'\n" + "    id 'application'\n"
+						+ "    id 'net.bytebuddy.byte-buddy'\n" + "}\n" + "configurations {\n"
+						+ "    simpleplugin\n" + "}\n" + "dependencies {\n"
+						+ "    simpleplugin files(\"" + testPluginJarFile.getAbsolutePath()
+						.replace(File.separatorChar, '/') + "\")\n" + "}\n" + "byteBuddy {\n"
+						+ "    transformations {\n" + "        transformation {\n"
 						+ "            plugin = \"net.bytebuddy.test.SimplePlugin\"\n"
-						+ "            classpath = configurations.simpleplugin\n"
-						+ "        }\n" + "    }\n" + "}", buildFile,
+						+ "            classpath = configurations.simpleplugin\n" + "        }\n"
+						+ "    }\n" + "}\n" + "mainClassName = 'foo.Bar'", buildFile,
 				Charset.defaultCharset());
 		Files.write(
-				"public class Hello { public static void main(String[] args) { System.out.println(\"Hello world!\"); } }",
-				new File(testProjectDir.newFolder("src", "main", "java"), "Hello.java"),
-				Charset.defaultCharset());
+				"package foo;\npublic class Bar { public String foo() { return \"bar\"; } public static void main(String[] args) { System.out.println(\"foo=\" + new Bar().foo()); } }",
+				new File(testProjectDir.newFolder("src", "main", "java", "foo"),
+						"Bar.java"), Charset.defaultCharset());
 
 		BuildResult result = GradleRunner.create().withPluginClasspath()
-				.withProjectDir(testProjectDir.getRoot()).withArguments("-s", "classes")
+				.withProjectDir(testProjectDir.getRoot()).withArguments("-s", "run")
+				.forwardOutput()
 				.build();
 
 		assertEquals(result.task(":classes").getOutcome(), SUCCESS);
+
+		assertTrue(result.getOutput().contains("foo=qux"));
 	}
+
 }
