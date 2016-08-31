@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.bytebuddy.ByteBuddy;
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 
@@ -46,7 +47,8 @@ public class ClassLoaderResolver implements Closeable {
 				throw new RuntimeException(e);
 			}
 		}
-		return new URLClassLoader(classpathElements.toArray(new URL[0]));
+		return new URLClassLoader(classpathElements.toArray(new URL[0]),
+				ByteBuddy.class.getClassLoader());
 	}
 
 	@Override
